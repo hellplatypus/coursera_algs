@@ -97,17 +97,94 @@ class MergeSort(SortBase):
         return result_arr
 
 
+class QuickSort(SortBase):
+
+    def sort(self):
+        low = 0
+        high = len(self.arr) - 1
+        self.quick_sort(low, high)
+
+    def quick_sort(self, low, high):
+        if low < high:
+            pivot_index = self.partition(low, high)
+            self.quick_sort(low, pivot_index - 1)
+            self.quick_sort(pivot_index + 1, high)
+
+    @abstractmethod
+    def partition(self, low, high):
+        pass
+
+
+class QuickSortWiki(QuickSort):
+
+    def partition(self, low, high):
+        pivot = self.arr[high]
+        left_index = low
+        for right_index in range(low, high):
+            if self.arr[right_index] < pivot:
+                self._swap(left_index, right_index)
+                left_index += 1
+        self._swap(left_index, high)
+        return left_index
+
+
+class QuickSortClassic(QuickSort):
+
+    def partition(self, start, end):
+        pivot = self.arr[end]
+        bottom = start - 1
+        top = end
+
+        done = 0
+        while not done:
+            while not done:
+                bottom += 1
+                if bottom == top:
+                    done = 1
+                    break
+                if self.arr[bottom] > pivot:
+                    self.arr[top] = self.arr[bottom]
+                    break
+
+            while not done:
+                top -= 1
+                if top == bottom:
+                    done = 1
+                    break
+                if self.arr[top] < pivot:
+                    self.arr[bottom] = self.arr[top]
+                    break
+        self.arr[top] = pivot
+        return top
+
+
+class QuickSortOneLine(SortBase):
+
+    def sort(self):
+        self.qsort(self.arr)
+
+    def qsort(self, arr):
+        if len(arr) <= 1:
+            return arr
+        else:
+            return self.qsort([x for x in arr[1:] if x < arr[0]]) + [arr[0]] + self.qsort([x for x in arr[1:] if x >= arr[0]])
+
 if __name__ == '__main__':
+
+    ARRAY_SIZE = 10000
 
     sort_class_list = [
                         ShellSort,
-                        MergeSort
+                        MergeSort,
+                        QuickSortWiki,
+                        QuickSortClassic,
+                        QuickSortOneLine
                       ]
     for sort_class in sort_class_list:
-        sort_instance = sort_class(11000)
+        sort_instance = sort_class(ARRAY_SIZE)
         print sort_instance.__class__.__name__
         print "_________________________________________________________"
-        sort_instance.print_arr()
+        # sort_instance.print_arr()
         start_time = time.time()
         sort_instance.sort()
         print "Sorting time: ", time.time() - start_time
@@ -115,7 +192,7 @@ if __name__ == '__main__':
             print "Array is sorted."
         else:
             print "Array is not sorted."
-        sort_instance.print_arr()
+        # sort_instance.print_arr()
         print
 
 
